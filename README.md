@@ -1,1 +1,0 @@
-# ignite_team_rn
