@@ -2,7 +2,7 @@ import styled from "styled-components/native";
 
 export const Container = styled.View`
     width: 100%;
-    margin: 32px 0%;
+    margin: 32px 0%; //32px em cima e embaixo e 0% nas laterais
 `;
 
 export const Title = styled.Text`
