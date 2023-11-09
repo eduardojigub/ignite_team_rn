@@ -23,6 +23,7 @@ export function Groups() {
         ListEmptyComponent={() => (
           <ListEmpty message="Nenhuma turma encontrada. Que tal cadastrar a primeira?" />
         )}
+        showsVerticalScrollIndicator={false}
       />
       <Button title="Cadastrar turma" />
     </Container>
