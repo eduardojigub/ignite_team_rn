@@ -3,6 +3,7 @@ import { ButtonIcon } from '@components/ButtonIcon';
 import { Container, Form } from './styles';
 import { Highlight } from '@components/Highlight';
 import { Input } from '@components/Input';
+import { Filter } from '@components/Filter';
 
 export const Players = () => {
   return (
@@ -17,6 +18,7 @@ export const Players = () => {
         <Input placeholder="Nome da pessoa" autoCorrect={false} />
         <ButtonIcon icon="add" />
       </Form>
+      <Filter title="Time A" />
     </Container>
   );
 };
