@@ -14,6 +14,7 @@ export function Groups() {
   const [groups, setGroups] = useState<string[]>([]);
 
   const navigation = useNavigation();
+
   function handleNewGroup() {
     navigation.navigate('new');
   }

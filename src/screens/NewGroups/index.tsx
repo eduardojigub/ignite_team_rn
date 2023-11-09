@@ -3,8 +3,15 @@ import { Container, Content, Icon } from './styles';
 import { Highlight } from '@components/Highlight';
 import { Button } from '@components/Button';
 import { Input } from '@components/Input';
+import { useNavigation } from '@react-navigation/native';
 
 export function NewGroups() {
+  const navigation = useNavigation();
+
+  function handleCreateGroup() {
+    navigation.navigate('players', { group: 'Guto' });
+  }
+
   return (
     <Container>
       <Header showBackButton />
@@ -15,7 +22,11 @@ export function NewGroups() {
           subtitle="Convide seus amigos e familiares para um novo grupo."
         />
         <Input placeholder="Nome da Turma" />
-        <Button title="Criar Turma" style={{ marginTop: 20 }} />
+        <Button
+          title="Criar Turma"
+          style={{ marginTop: 20 }}
+          onPress={handleCreateGroup}
+        />
       </Content>
     </Container>
   );
