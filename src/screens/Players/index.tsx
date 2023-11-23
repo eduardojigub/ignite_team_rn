@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Alert, FlatList } from 'react-native';
 
@@ -14,16 +14,19 @@ import { Button } from '@components/Button';
 import { Container, Form, HeaderList, NumberOfPlayers } from './styles';
 import { AppError } from '@utils/AppError';
 import { addPlayersByGroup } from '@storage/players/addPlayersByGroup';
-import { getPlayersByGroup } from '@storage/players/getPlayersByGroup';
+import { getPlayersByGroupAndTeam } from '@storage/players/getPlayersByGroupAndTeam';
+import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO';
 
 type RouteParams = {
   group: string;
 };
 
 export const Players = () => {
+  const route = useRoute();
+  const { group } = route.params as RouteParams;
   const [newPlayerName, setNewPlayerName] = useState('');
   const [team, setTeam] = useState('Time a');
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState<PlayerStorageDTO[]>([]);
 
   async function handleAddPlayer() {
     if (newPlayerName.trim().length === 0) {
@@ -37,8 +40,7 @@ export const Players = () => {
 
     try {
       await addPlayersByGroup(newPlayer, group);
-      const players = await getPlayersByGroup(group);
-      console.log(players);
+      fetchPlayersByTeam();
     } catch (error) {
       if (error instanceof AppError) {
         Alert.alert('Adicionar pessoa', error.message);
@@ -52,8 +54,20 @@ export const Players = () => {
     }
   }
 
-  const route = useRoute();
-  const { group } = route.params as RouteParams;
+  async function fetchPlayersByTeam() {
+    try {
+      const playerByTeam = await getPlayersByGroupAndTeam(group, team);
+      setPlayers(playerByTeam);
+    } catch (error) {
+      Alert.alert('Buscar pessoas', 'Ocorreu um erro ao buscar as pessoas.');
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchPlayersByTeam();
+  }, [team]);
+
   return (
     <Container>
       <Header showBackButton />
@@ -84,9 +98,9 @@ export const Players = () => {
       </HeaderList>
       <FlatList
         data={players}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <PlayerCard name={item} onRemove={() => {}} />
+          <PlayerCard name={item.name} onRemove={() => {}} />
         )}
         ListEmptyComponent={() => (
           <ListEmpty message="Não há pessoas nesse time" />
@@ -108,4 +122,3 @@ function playersAddByGroup(
 ) {
   throw new Error('Function not implemented.');
 }
-
