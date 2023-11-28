@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRoute } from '@react-navigation/native';
-import { Alert, FlatList } from 'react-native';
+import { Alert, FlatList, TextInput } from 'react-native';
 
 import { Header } from '@components/Header';
 import { ButtonIcon } from '@components/ButtonIcon';
@@ -28,6 +28,8 @@ export const Players = () => {
   const [team, setTeam] = useState('Time a');
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([]);
 
+  const newPlayerNameInputRef = useRef<TextInput>(null);
+
   async function handleAddPlayer() {
     if (newPlayerName.trim().length === 0) {
       return Alert.alert('Adicionar pessoa', 'Informe o nome da pessoa.');
@@ -40,6 +42,10 @@ export const Players = () => {
 
     try {
       await addPlayersByGroup(newPlayer, group);
+
+      newPlayerNameInputRef.current?.blur();
+
+      setNewPlayerName('');
       fetchPlayersByTeam();
     } catch (error) {
       if (error instanceof AppError) {
@@ -75,9 +81,13 @@ export const Players = () => {
       <Highlight title={group} subtitle="Adicione a galera e separe os times" />
       <Form>
         <Input
+          inputRef={newPlayerNameInputRef}
           placeholder="Nome da pessoa"
           autoCorrect={false}
+          value={newPlayerName}
           onChangeText={setNewPlayerName}
+          onSubmitEditing={handleAddPlayer}
+          returnKeyType="done"
         />
         <ButtonIcon icon="add" onPress={handleAddPlayer} />
       </Form>
