@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { Alert, FlatList, TextInput } from 'react-native';
 
 import { Header } from '@components/Header';
@@ -17,6 +17,7 @@ import { addPlayersByGroup } from '@storage/players/addPlayersByGroup';
 import { getPlayersByGroupAndTeam } from '@storage/players/getPlayersByGroupAndTeam';
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO';
 import { removePlayerByGroup } from '@storage/players/removePlayerByGroup';
+import { groupRemoveByName } from '@storage/group/groupDeleteByName';
 
 type RouteParams = {
   group: string;
@@ -25,6 +26,7 @@ type RouteParams = {
 export const Players = () => {
   const route = useRoute();
   const { group } = route.params as RouteParams;
+  const navigation = useNavigation();
   const [newPlayerName, setNewPlayerName] = useState('');
   const [team, setTeam] = useState('Time a');
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([]);
@@ -79,6 +81,29 @@ export const Players = () => {
       console.log(error);
       Alert.alert('Remover pessoa', 'Ocorreu um erro ao remover a pessoa.');
     }
+  }
+
+  async function groupRemove() {
+    try {
+      await groupRemoveByName(group);
+      navigation.navigate('groups');
+    } catch (e) {
+      console.log(e);
+      Alert.alert('Remover turma', 'Ocorreu um erro ao remover a turma.');
+    }
+  }
+
+  async function handleRemoveGroup() {
+    Alert.alert('Remover turma', 'Deseja realmente remover o grupo?', [
+      {
+        text: 'Não',
+        style: 'cancel',
+      },
+      {
+        text: 'Sim',
+        onPress: () => groupRemove(),
+      },
+    ]);
   }
 
   useEffect(() => {
@@ -136,7 +161,11 @@ export const Players = () => {
         ]}
       />
 
-      <Button title="Remover Turma" type="SECONDARY" />
+      <Button
+        title="Remover Turma"
+        type="SECONDARY"
+        onPress={handleRemoveGroup}
+      />
     </Container>
   );
 };
