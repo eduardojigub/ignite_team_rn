@@ -16,6 +16,7 @@ import { AppError } from '@utils/AppError';
 import { addPlayersByGroup } from '@storage/players/addPlayersByGroup';
 import { getPlayersByGroupAndTeam } from '@storage/players/getPlayersByGroupAndTeam';
 import { PlayerStorageDTO } from '@storage/players/PlayerStorageDTO';
+import { removePlayerByGroup } from '@storage/players/removePlayerByGroup';
 
 type RouteParams = {
   group: string;
@@ -70,6 +71,16 @@ export const Players = () => {
     }
   }
 
+  async function handleRemovePlayer(playerName: string) {
+    try {
+      await removePlayerByGroup(playerName, group);
+      fetchPlayersByTeam();
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Remover pessoa', 'Ocorreu um erro ao remover a pessoa.');
+    }
+  }
+
   useEffect(() => {
     fetchPlayersByTeam();
   }, [team]);
@@ -110,7 +121,10 @@ export const Players = () => {
         data={players}
         keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <PlayerCard name={item.name} onRemove={() => {}} />
+          <PlayerCard
+            name={item.name}
+            onRemove={() => handleRemovePlayer(item.name)}
+          />
         )}
         ListEmptyComponent={() => (
           <ListEmpty message="Não há pessoas nesse time" />
@@ -126,9 +140,3 @@ export const Players = () => {
     </Container>
   );
 };
-function playersAddByGroup(
-  group: string,
-  newPlayer: { name: string; team: string }
-) {
-  throw new Error('Function not implemented.');
-}
